@@ -58,8 +58,8 @@ def send(text, webhook, color, title):
         print(f"ข้าม {title} (ไม่มีเนื้อหาหรือ webhook)")
         return
     payload = json.dumps({
-        "content": f"**📰 สรุปข่าวประจำวัน — {date_th}**",
         "embeds": [{
+            "author": {"name": f"📰 สรุปข่าวประจำวัน — {date_th}"},
             "title": title,
             "description": text[:3900],
             "color": color,
