@@ -59,9 +59,8 @@ def send(text, webhook, color, title):
         return
     payload = json.dumps({
         "embeds": [{
-            "author": {"name": f"📰 สรุปข่าวประจำวัน — {date_th}"},
-            "title": title,
-            "description": text[:3900],
+            "title": f"{title}",
+            "description": f"📅 **{date_th}**\n\n{text[:3800]}",
             "color": color,
             "footer": {"text": "อัปเดตอัตโนมัติทุกวัน 07:00 น. โดย Claude"}
         }]
