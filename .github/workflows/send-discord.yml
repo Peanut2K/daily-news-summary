@@ -17,10 +17,4 @@ jobs:
       - name: Send to Discord
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        run: |
-          FILE=$(ls -t summaries/*.md | head -1)
-          CONTENT=$(cat "$FILE" | head -c 1900)
-          ESCAPED=$(echo "$CONTENT" | python3 -c "import sys, json; print(json.dumps(sys.stdin.read()))")
-          curl -s -X POST "$DISCORD_WEBHOOK" \
-            -H "Content-Type: application/json" \
-            -d "{\"embeds\": [{\"description\": $ESCAPED, \"color\": 5814783}]}"
+        run: python3 scripts/send_discord.py
