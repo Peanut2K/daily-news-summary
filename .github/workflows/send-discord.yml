@@ -2,6 +2,9 @@ name: Send News to Discord
 
 on:
   push:
+    branches:
+      - main
+      - 'claude/**' 
     paths:
       - 'summaries/**.md'
 
