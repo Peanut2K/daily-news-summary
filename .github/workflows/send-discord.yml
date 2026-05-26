@@ -1,0 +1,84 @@
+name: Send News to Discord
+
+on:
+  push:
+    paths:
+      - 'summaries/**.md'
+
+jobs:
+  send-to-discord:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Read latest summary and send to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          FILE=$(ls -t summaries/*.md | head -1)
+          CONTENT=$(cat "$FILE")
+
+          # Discord จำกัด 2000 ตัวอักษรต่อ message
+          # ใช้ embeds แยกเป็น 3 section ให้สวยงาม
+
+          # แยก section ด้วย Python
+          python3 << 'EOF'
+          import os, json, urllib.request, re
+
+          with open(os.popen("ls -t summaries/*.md | head -1").read().strip()) as f:
+              content = f.read()
+
+          webhook_url = os.environ["DISCORD_WEBHOOK"]
+
+          # หา section ต่างๆ
+          def get_section(text, emoji, next_emojis):
+              pattern = rf'{re.escape(emoji)}.*?(?=(?:{")|(?:".join(re.escape(e) for e in next_emojis)})|$)'
+              match = re.search(pattern, text, re.DOTALL)
+              return match.group(0).strip() if match else ""
+
+          ai_section    = get_section(content, "🤖", ["⚽","📈","🔍"])
+          sport_section = get_section(content, "⚽", ["📈","🔍"])
+          biz_section   = get_section(content, "📈", ["🔍"])
+
+          # หาวันที่จาก header
+          date_match = re.search(r'—\s*(.+)', content.split('\n')[0])
+          date_str = date_match.group(1).strip() if date_match else "วันนี้"
+
+          payload = {
+              "embeds": [
+                  {
+                      "title": f"📰 สรุปข่าวประจำวัน — {date_str}",
+                      "color": 0x5865F2,  # Discord Blurple
+                      "fields": [
+                          {
+                              "name": "🤖 AI & เทคโนโลยี",
+                              "value": ai_section[2:].strip()[:1024] if ai_section else "ไม่มีข้อมูล",
+                              "inline": False
+                          },
+                          {
+                              "name": "⚽ กีฬา",
+                              "value": sport_section[2:].strip()[:1024] if sport_section else "ไม่มีข้อมูล",
+                              "inline": False
+                          },
+                          {
+                              "name": "📈 ธุรกิจ & หุ้น",
+                              "value": biz_section[2:].strip()[:1024] if biz_section else "ไม่มีข้อมูล",
+                              "inline": False
+                          }
+                      ],
+                      "footer": {
+                          "text": "🔍 อัปเดตอัตโนมัติทุกวัน 07:00 น. โดย Claude"
+                      }
+                  }
+              ]
+          }
+
+          data = json.dumps(payload).encode("utf-8")
+          req = urllib.request.Request(
+              webhook_url,
+              data=data,
+              headers={"Content-Type": "application/json"}
+          )
+          urllib.request.urlopen(req)
+          print("✅ ส่ง Discord สำเร็จ!")
+          EOF
