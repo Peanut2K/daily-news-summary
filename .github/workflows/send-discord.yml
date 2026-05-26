@@ -14,7 +14,45 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Send to Discord
+      - name: Split and send to Discord channels
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        run: python3 scripts/send_discord.py
+          WEBHOOK_AI:    ${{ secrets.DISCORD_WEBHOOK_AI }}
+          WEBHOOK_SPORT: ${{ secrets.DISCORD_WEBHOOK_SPORT }}
+          WEBHOOK_BIZ:   ${{ secrets.DISCORD_WEBHOOK_BIZ }}
+        run: |
+          FILE=$(ls -t summaries/*.md | head -1)
+
+          send_section() {
+            local CONTENT="$1"
+            local WEBHOOK="$2"
+            local COLOR="$3"
+            ESCAPED=$(echo "$CONTENT" | python3 -c "import sys, json; print(json.dumps(sys.stdin.read()))")
+            curl -s -X POST "$WEBHOOK" \
+              -H "Content-Type: application/json" \
+              -d "{\"embeds\": [{\"description\": $ESCAPED, \"color\": $COLOR}]}"
+          }
+
+          # แยก section ด้วย Python
+          AI=$(python3 -c "
+import re, sys
+t = open('$FILE', encoding='utf-8').read()
+m = re.search(r'🤖[^\n]*\n.*?(?=\n⚽|\n📈|\n🔍|$)', t, re.DOTALL)
+print(m.group(0).strip() if m else '')
+")
+          SPORT=$(python3 -c "
+import re, sys
+t = open('$FILE', encoding='utf-8').read()
+m = re.search(r'⚽[^\n]*\n.*?(?=\n📈|\n🔍|$)', t, re.DOTALL)
+print(m.group(0).strip() if m else '')
+")
+          BIZ=$(python3 -c "
+import re, sys
+t = open('$FILE', encoding='utf-8').read()
+m = re.search(r'📈[^\n]*\n.*?(?=\n🔍|$)', t, re.DOTALL)
+print(m.group(0).strip() if m else '')
+")
+
+          # ส่งแต่ละ section ไปช่องของมัน
+          [ -n "$AI" ]    && send_section "$AI"    "$WEBHOOK_AI"    5765993   # น้ำเงิน
+          [ -n "$SPORT" ] && send_section "$SPORT" "$WEBHOOK_SPORT" 5763719   # เขียว
+          [ -n "$BIZ" ]   && send_section "$BIZ"   "$WEBHOOK_BIZ"  16766720  # เหลือง
