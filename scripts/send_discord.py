@@ -55,14 +55,14 @@ sections = split_sections(content)
 
 def send(text, webhook, color, title):
     if not text or not webhook:
-        print(f"ข้าม {title} (ไม่มีเนื้อหาหรือ webhook)")
+        print(f"Skipping {title} (no content or webhook)")
         return
     payload = json.dumps({
         "embeds": [{
             "title": f"{title}",
             "description": f"📅 **{date_th}**\n\n{text[:3800]}",
             "color": color,
-            "footer": {"text": "อัปเดตอัตโนมัติทุกวัน 07:00 น. โดย Claude"}
+            "footer": {"text": "Daily Update by Claude"}
         }]
     })
     result = subprocess.run(
