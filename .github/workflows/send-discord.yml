@@ -26,5 +26,6 @@ jobs:
           DISCORD_WEBHOOK_AI:      ${{ secrets.DISCORD_WEBHOOK_AI }}
           DISCORD_WEBHOOK_SPORT:   ${{ secrets.DISCORD_WEBHOOK_SPORT }}
           DISCORD_WEBHOOK_BIZ:     ${{ secrets.DISCORD_WEBHOOK_BIZ }}
-          DISCORD_WEBHOOK_CULTURE: ${{ secrets.DISCORD_WEBHOOK_CULTURE }}
+          DISCORD_WEBHOOK_CULTURE:   ${{ secrets.DISCORD_WEBHOOK_CULTURE }}
+          DISCORD_WEBHOOK_FIRSTJOB:  ${{ secrets.DISCORD_WEBHOOK_FIRSTJOB }}
         run: python3 scripts/send_discord.py
