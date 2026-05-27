@@ -1,22 +1,30 @@
-name: Send News to Discord
+name: Send Daily News to Discord
 
 on:
   push:
     branches:
       - main
-      - 'claude/**'
+      - "claude/**"
     paths:
-      - 'summaries/**.md'
+      - "summaries/**.md"
 
 jobs:
-  send-to-discord:
+  send:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Send to Discord
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Send news to Discord
         env:
-          WEBHOOK_AI:    ${{ secrets.DISCORD_WEBHOOK_AI }}
-          WEBHOOK_SPORT: ${{ secrets.DISCORD_WEBHOOK_SPORT }}
-          WEBHOOK_BIZ:   ${{ secrets.DISCORD_WEBHOOK_BIZ }}
+          DISCORD_WEBHOOK_AI:      ${{ secrets.DISCORD_WEBHOOK_AI }}
+          DISCORD_WEBHOOK_SPORT:   ${{ secrets.DISCORD_WEBHOOK_SPORT }}
+          DISCORD_WEBHOOK_BIZ:     ${{ secrets.DISCORD_WEBHOOK_BIZ }}
+          DISCORD_WEBHOOK_CULTURE: ${{ secrets.DISCORD_WEBHOOK_CULTURE }}
         run: python3 scripts/send_discord.py
