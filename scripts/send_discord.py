@@ -10,6 +10,7 @@ WEBHOOK_SPORT = os.environ["DISCORD_WEBHOOK_SPORT"]
 WEBHOOK_BIZ  = os.environ["DISCORD_WEBHOOK_BIZ"]
 WEBHOOK_CULTURE = os.environ["DISCORD_WEBHOOK_CULTURE"]
 WEBHOOK_FIRSTJOB = os.environ["DISCORD_WEBHOOK_FIRSTJOB"]
+WEBHOOK_POLITICS = os.environ["DISCORD_WEBHOOK_POLITICS"]
 
 # ===== Map: emoji prefix → webhook =====
 SECTION_MAP = {
@@ -18,6 +19,7 @@ SECTION_MAP = {
     "\U0001f4c8": WEBHOOK_BIZ,     # 📈
     "\U0001f3ad": WEBHOOK_CULTURE,  # 🎭
     "\U0001f393": WEBHOOK_FIRSTJOB, # 🎓
+    "\U0001f30d": WEBHOOK_POLITICS, # 🌍
 }
 
 # ===== Thai date helper =====
@@ -105,6 +107,7 @@ SECTION_TITLES = {
     "\U0001f4c8": "\U0001f4c8 ธุรกิจ & หุ้น",
     "\U0001f3ad": "\U0001f3ad วัฒนธรรม & ไลฟ์สไตล์",
     "\U0001f393": "\U0001f393 First Jobber",
+    "\U0001f30d": "\U0001f30d การเมืองโลก",
 }
 
 # ===== Main =====

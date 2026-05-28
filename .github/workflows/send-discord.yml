@@ -28,4 +28,5 @@ jobs:
           DISCORD_WEBHOOK_BIZ:     ${{ secrets.DISCORD_WEBHOOK_BIZ }}
           DISCORD_WEBHOOK_CULTURE:   ${{ secrets.DISCORD_WEBHOOK_CULTURE }}
           DISCORD_WEBHOOK_FIRSTJOB:  ${{ secrets.DISCORD_WEBHOOK_FIRSTJOB }}
+          DISCORD_WEBHOOK_POLITICS:  ${{ secrets.DISCORD_WEBHOOK_POLITICS }}
         run: python3 scripts/send_discord.py
